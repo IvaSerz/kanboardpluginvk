@@ -17,10 +17,6 @@ class Plugin extends Base
 {
     public function initialize()
     {
-        // Add the vk_long_token column to the "users" table (needed for
-        // personal user tokens obtained through VK OAuth)
-        $this->schemaManager->addMissingColumnToTable('users', 'vk_long_token');
-
         $this->route->addRoute('/auth/vk/', 'VkController', 'authenticate', 'VK');
         $this->route->addRoute('/callback/vk/', 'VkController', 'callback', 'VK');
 

@@ -8,16 +8,18 @@ use Kanboard\Core\Base;
  * VK Long-Lived User Access Token Model
  *
  * Stores long-lived user access tokens for each Kanboard user in the
- * "user_has_permissions" table (column: vk_long_token).
+ * plugin-owned table "plugin_vk_user_tokens" (created by Schema/*.php
+ * migrations, so core tables are never modified).
  *
- * VK user service tokens expire after ~12 hours, so they must be exchanged
- * for long-lived tokens (valid for 6-12 months) via the "secure.vk.com" endpoint.
+ * VK user tokens expire after ~12 hours, so they must be exchanged
+ * for long-lived tokens (valid for 6-12 months) via auth.exchangeLongLivedToken.
  *
  * @package  vk
  * @author   Kanboard VK Plugin
  */
 class VkLongAccessTokenModel extends Base
 {
+    const TABLE = 'plugin_vk_user_tokens';
     const SERVICE = 'vk';
 
     /**
@@ -30,9 +32,8 @@ class VkLongAccessTokenModel extends Base
     public function storeToken($userId, $token)
     {
         return $this->db
-            ->table(self::TABLE_USERS)
-            ->eq('id', $userId)
-            ->eq('role', self::ROLE_MANAGER)
+            ->table(self::TABLE)
+            ->eq('user_id', $userId)
             ->save(array('vk_long_token' => $token));
     }
 
@@ -45,11 +46,9 @@ class VkLongAccessTokenModel extends Base
     public function getToken($userId)
     {
         return $this->db
-            ->table(self::TABLE_USERS)
-            ->eq('id', $userId)
-            ->eq('role', self::ROLE_MANAGER)
-            ->eq('is_active', 1)
-            ->pluck('vk_long_token');
+            ->table(self::TABLE)
+            ->eq('user_id', $userId)
+            ->findOneColumn('vk_long_token');
     }
 
     /**
@@ -73,9 +72,8 @@ class VkLongAccessTokenModel extends Base
     public function revokeToken($userId)
     {
         return $this->db
-            ->table(self::TABLE_USERS)
-            ->eq('id', $userId)
-            ->eq('role', self::ROLE_MANAGER)
-            ->save(array('vk_long_token' => ''));
+            ->table(self::TABLE)
+            ->eq('user_id', $userId)
+            ->remove();
     }
 }

@@ -3,9 +3,7 @@
 namespace Kanboard\Plugin\VK\Controller;
 
 use Kanboard\Controller\BaseController;
-use Kanboard\Core\Plugin\GenericPluginInterface;
 use Kanboard\Plugin\VK\Model\VkLongAccessTokenModel;
-use Kanboard\Plugin\VK\Notification\Api\VkApi;
 
 /**
  * VK Controller
@@ -17,7 +15,7 @@ use Kanboard\Plugin\VK\Notification\Api\VkApi;
  * @package  vk
  * @author   Kanboard VK Plugin
  */
-class VkController extends BaseController implements GenericPluginInterface
+class VkController extends BaseController
 {
     /**
      * Base URL of the VK REST API
